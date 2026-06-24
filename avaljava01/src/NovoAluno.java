@@ -1,12 +1,15 @@
 
 import javax.swing.table.*; 
-
-
-
+import aluno.aluno;
+import BancoSimulado.Banco;
 public class NovoAluno extends javax.swing.JFrame {
    
     public NovoAluno() {
         initComponents();
+        TabelaAlunos.setRowSelectionAllowed(true);
+        TabelaAlunos.setSelectionMode(
+            javax.swing.ListSelectionModel.SINGLE_SELECTION
+        );
     }
 
    
@@ -22,7 +25,8 @@ public class NovoAluno extends javax.swing.JFrame {
         NomeC = new javax.swing.JTextField();
         Turma = new javax.swing.JTextField();
         Email = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        btnAdicionarAluno = new javax.swing.JButton();
+        btnExcluirCadastro = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -78,11 +82,21 @@ public class NovoAluno extends javax.swing.JFrame {
         Email.setBackground(new java.awt.Color(153, 255, 153));
         Email.setBorder(javax.swing.BorderFactory.createTitledBorder("Email:"));
 
-        jButton1.setBackground(new java.awt.Color(204, 255, 204));
-        jButton1.setText("Adicionar Aluno");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnAdicionarAluno.setBackground(new java.awt.Color(204, 255, 204));
+        btnAdicionarAluno.setText("Adicionar Aluno");
+        btnAdicionarAluno.setToolTipText("Salvar informações no sistemas");
+        btnAdicionarAluno.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnAdicionarAlunoActionPerformed(evt);
+            }
+        });
+
+        btnExcluirCadastro.setBackground(new java.awt.Color(204, 255, 204));
+        btnExcluirCadastro.setText("excluir cadastro");
+        btnExcluirCadastro.setToolTipText("excluir registro selecionado");
+        btnExcluirCadastro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirCadastroActionPerformed(evt);
             }
         });
 
@@ -100,7 +114,9 @@ public class NovoAluno extends javax.swing.JFrame {
                     .addComponent(NomeC)
                     .addComponent(IdAluno))
                 .addGap(112, 112, 112)
-                .addComponent(jButton1)
+                .addComponent(btnAdicionarAluno)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnExcluirCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -120,7 +136,9 @@ public class NovoAluno extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAdicionarAluno)
+                            .addComponent(btnExcluirCadastro))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
 
@@ -131,39 +149,85 @@ public class NovoAluno extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_IdAlunoActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-      DefaultTableModel modelo = new DefaultTableModel();
-       modelo.addColumn("id");
-       modelo.addColumn("nome");
-       modelo.addColumn("turma");
-       modelo.addColumn("cpf");
-       
-       NovoAluno NovoAluno = new NovoAluno();
-       
-       modelo.addRow(new Object[]{
-           
-           NovoAluno.getId(),
-           NovoAluno.getNome(),
-           NovoAluno.getCpf(),
-           NovoAluno.getEmail(), 
-      
-       }    
-        );
-
-
+    private void btnAdicionarAlunoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarAlunoActionPerformed
     
        
-    }//GEN-LAST:event_jButton1ActionPerformed
+aluno a = new aluno();
 
-   
-    public static void main(String args[]) {
+a.setId(Integer.parseInt(IdAluno.getText()));
+    a.setNome(NomeC.getText());
+    a.setTurma(Turma.getText());
+    a.setEmail(Email.getText());
+
+ Banco.aluno.add(a);
+    
+ DefaultTableModel modelo = (DefaultTableModel) TabelaAlunos.getModel();
+ 
+    modelo.addRow(new Object[]{
+        a.getId(),
+        a.getNome(),
+        a.getTurma(),
+        a.getEmail()
+            
+            
+            
+            
+    });
+    
+     IdAluno.setText("");
+    NomeC.setText("");
+    Turma.setText("");
+    Email.setText("");
        
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new NovoAluno().setVisible(true);
-            }
-        });
+
+    }//GEN-LAST:event_btnAdicionarAlunoActionPerformed
+
+    private void btnExcluirCadastroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirCadastroActionPerformed
+
+
+    int linha = TabelaAlunos.getSelectedRow();
+
+    if (linha == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Selecione um aluno para excluir!");
+        return;
     }
+
+    int opcao = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            "Tem certeza que deseja excluir este aluno?",
+            "Confirmação",
+            javax.swing.JOptionPane.YES_NO_OPTION
+    );
+
+    if (opcao != javax.swing.JOptionPane.YES_OPTION) {
+        return; // se clicou em NÃO, não faz nada
+    }
+
+    DefaultTableModel modelo =
+            (DefaultTableModel) TabelaAlunos.getModel();
+
+    int id = (int) modelo.getValueAt(linha, 0);
+
+    java.util.Iterator<aluno> it = Banco.aluno.iterator();
+
+    while (it.hasNext()) {
+        aluno a = it.next();
+
+        if (a.getId() == id) {
+            it.remove();
+            break;
+        }
+    }
+
+    modelo.removeRow(linha);
+
+    javax.swing.JOptionPane.showMessageDialog(this,
+            "Aluno removido com sucesso!");
+
+    
+    }//GEN-LAST:event_btnExcluirCadastroActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Email;
@@ -171,7 +235,8 @@ public class NovoAluno extends javax.swing.JFrame {
     private javax.swing.JTextField NomeC;
     private javax.swing.JTable TabelaAlunos;
     private javax.swing.JTextField Turma;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnAdicionarAluno;
+    private javax.swing.JButton btnExcluirCadastro;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
